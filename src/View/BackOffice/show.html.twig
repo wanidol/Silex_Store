@@ -1,0 +1,40 @@
+{% extends "layout.html.twig" %}
+{% block contenu %}
+	<div class="row">
+		{% if   app.session.get('droit') is defined and  app.session.get('droit') == 'DROITadmin' %}
+			<a href="{{ path('vetement.add') }}"> Ajouter un vetement </a>
+		{% endif %}
+
+		<table>
+			<caption>Recapitulatifs des vetements (avec twig)</caption>
+			<thead>
+			<tr>
+				<th>NOM</th>
+				<th>Type</th>
+				<th>Prix</th>
+				<th>Taille</th>
+				<th>photo</th>
+				<th>opération</th>
+			</tr>
+			</thead>
+			<tbody>
+
+			{% for vetement in data if data is not empty %}
+
+				<tr>
+					<td>{{vetement.descriptif}}</td>
+					<td>{{vetement.prixDeBase}}</td>
+					<td>{{vetement.taille}}</td>
+					<td>{{vetement.photo}}</td>
+					<td><img style="height:120px" src="{{asset('images/')}}{{vetement.photo}}" alt="image de {{vetement.descriptif}}" ></td>
+					<td>
+						<a href="{{ path('vetement.edit', {id: vetement.id_vetement}) }}">modifier</a>
+						<a href="{{ path('vetement.delete', {id: vetement.id_vetement}) }}">supprimer</a>
+					</td>
+				</tr>
+			{% endfor %}
+			<tbody>
+		</table>
+	</div>
+{% endblock %}
+

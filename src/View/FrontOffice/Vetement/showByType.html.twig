@@ -1,0 +1,33 @@
+{% extends "layout.html.twig" %}
+{% block contenu %}
+    <div class="row">
+        <fieldset>
+            <form method="post" action="{{ path('vetement.categoriesDetail') }}">
+                <legend>Rechercher un Vetement par categories</legend>
+
+                <label style="font-size: larger">Categories :
+
+                    <select name="id_Type">
+                        {% if  donnees.type_id is not defined or donnees.type_id is empty   %}
+                            <option value="">Veuillez sélectionner un Type</option>
+                        {% endif %}
+                        {% for type in types %}
+                            <option value="{{ type.id_Type }}"
+                                    {% if donnees.type_id is defined and type.id_Type == donnees.type_id %}selected{% endif %}>
+                                {{ type.libelle }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if erreurs.type_id is defined %}
+                        <small class="error">{{erreurs.type_id}}</small>
+                    {% endif %}
+                </label>
+
+                <input type="image" name="submit" src="{{asset('images/find.jpg')}}" border="0" alt="Submit" placeholder="Click me"  />
+                {#<input type="image" name="submit"  border="0" alt="Submit" placeholder="Click me"  />#}
+            </form>
+        </fieldset>
+
+    </div>
+{% endblock %}
+

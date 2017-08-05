@@ -1,0 +1,51 @@
+{% extends "layout.html.twig" %}
+{% block contenu %}
+    <form method="post" action="{{ path('vetement.validFormAdd') }}">
+        <div class="row">
+            <fieldset>
+                <legend>Creer un vetement (twig)</legend>
+                <label>Descriptif :
+                    <input name="descriptif"  type="text"  size="18" value="{{donnees.descriptif|default('')}}" />
+                    {% if erreurs.nom is defined %}
+                        <small class="error">{{erreurs.descriptif}}</small>
+                    {% endif %}
+                </label>
+                <label>Type :
+                    <select name="type_id">
+                        {% if  donnees.type_id is not defined or donnees.type_id is empty   %}
+                            <option value="">Veuillez sélectionner un type</option>
+                        {% endif %}
+                        {% for type in types %}
+                            <option value="{{ type.id_Type }}"
+                                    {% if donnees.typ_id is defined and type.id_Type == donnees.type_id %}selected{% endif %}>
+                                {{ type.libelle }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if erreurs.type_id is defined %}
+                        <small class="error">{{erreurs.type_id}}</small>
+                    {% endif %}
+                </label>
+                <label>Prix
+                    <input name="prix"  type="text"  size="18" 	value="{{donnees.prixDeBase|default('')}}"/>
+                    {% if erreurs.prixDeBase is defined %}
+                        <small class="error">{{erreurs.prixDeBase}}</small>
+                    {% endif %}
+                </label>
+                <label>Taille
+                    <input name="taille"  type="text"  size="18" 	value="{{donnees.taille|default('')}}"/>
+                    {% if erreurs.taille is defined %}
+                        <small class="error">{{erreurs.taille}}</small>
+                    {% endif %}
+                </label>
+                <label>Photo
+                    <input name="photo"  type="text"  size="18" value="{{donnees.photo|default('')}}"/>
+                    {% if erreurs.photo is defined %}
+                        <small class="error">{{erreurs.photo}}</small>
+                    {% endif %}
+                </label>
+                <input type="submit" name="creerVetement" value="créer" />
+            </fieldset>
+        </div>
+    </form>
+{% endblock %}

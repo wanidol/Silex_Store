@@ -1,0 +1,60 @@
+{% extends "layout.html.twig" %}
+{% block contenu %}
+	<div class="row">
+		{% if   app.session.get('droit') is defined and  app.session.get('droit') == 'DROITadmin' %}
+			<a href="{{ path('vetement.add') }}"> Ajouter un vetement </a>
+		{% endif %}
+
+		<table>
+			<caption>Recapitulatifs des vetements (avec twig)</caption>
+			<thead>
+			<tr>
+				<th>NOM</th>
+				<th>ID</th>
+				<th>Type</th>
+				<th>Prix</th>
+				<th>Taille</th>
+				<th>photo</th>
+                {% if app.session.get('roles') == 'ROLE_CLIENT' %}
+					<th>Details</th>
+                {% endif %}
+                {% if  app.session.get('roles') == 'ROLE_ADMIN' %}
+					<th>DateAchat</th>
+					<th>opération</th>
+                {% endif %}
+			</tr>
+			</thead>
+			<tbody>
+
+			{% for vetement in data if data is not empty %}
+
+				<tr>
+					<td>{{vetement.descriptif}}</td>
+					<td>{{vetement.id_vetement}}</td>
+					<td>{{vetement.libelle}}</td>
+					<td>EUR {{vetement.prixDeBase}}</td>
+					<td>{{vetement.taille}}</td>
+					{#<td>{{vetement.photo}}</td>#}
+					<td><img style="height:50px;width:50px" src="{{asset('images/')}}{{vetement.photo}}" alt="image de {{vetement.descriptif}}" ></td>
+                    {% if  app.session.get('roles') == 'ROLE_ADMIN' %}
+						<td>{{vetement.dateAchat}}</td>
+						<td>
+							<a href="{{ path('vetement.edit', {id: vetement.id_vetement}) }}">modifier</a>
+							<a href="{{ path('vetement.delete', {id: vetement.id_vetement}) }}">supprimer</a>
+						</td>
+                    {% elseif app.session.get('roles') == 'ROLE_CLIENT' %}
+						{#<form method="post" action="{{ path('vetement.validFormAdd') }}">#}
+							<td><a href="{{ path('vetement.detail', {id: vetement.id_vetement}) }}"><img style="width:40px;height:40px" src="{{asset('images/icon.png')}}"></a></td>
+						{#</form>#}
+                    {% endif %}
+
+				</tr>
+			{% endfor %}
+
+			<tbody>
+
+		</table>
+
+	</div>
+{% endblock %}
+

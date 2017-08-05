@@ -1,0 +1,45 @@
+
+{% extends "layout.html.twig" %}
+{% block contenu %}
+
+    <form method="post" action="{{ path('user.validFormRegister') }}">
+
+        <div class="row">
+
+            <fieldset>
+                <legend>Registration</legend>
+
+                <label>UserName :
+                    <input name="username"  type="text"  size="18" value="" placeholder="silex" required/>
+                </label>
+                {% if erreurs.username is defined %}
+                    <small class="error">{{erreurs.username}}</small>
+                {% endif %}
+
+                <label>Password :
+                    <input name="motdepasse"  type="password"  size="18" value="" placeholder="xxxxxxx" required/>
+                </label>
+
+                <label>Comfirm Password :
+                    <input name="confirmpassword"  type="password"  size="18" value="" placeholder="xxxxxxx" required/>
+                </label>
+                {% if erreurs.motdepasse is defined %}
+                    <small class="error">{{erreurs.motdepasse}}</small>
+                {% endif %}
+
+                <label>Email :
+                    <input name="email"  type="email"  size="18" value="" placeholder="monsilex@silex.com" required/>
+                </label>
+
+                {% if erreurs.register is defined %}
+                    <small class="error">{{erreurs.register}}</small>
+                {% endif %}
+
+
+                <input type="submit" name="seRegister" value="Se Registrer" />
+            </fieldset>
+        </div>
+    </form>
+{% endblock %}
+
+
