@@ -35,15 +35,27 @@ class VetementController implements ControllerProviderInterface
 
     public function show(Application $app)
     {
+        //Calling Helper
+        $vdate = new Helper_Date();
+
         $this->vetementModel = new VetementModel($app);
+        $total = $this->vetementModel->GetTotalRecords();
         $vetement = $this->vetementModel->getAllVetements();
-//        var_dump($vetement);
+
+        $max = (int)$total['total'];
+
+        for ($i = 0;$i < $max; $i++){
+            $temp = $vetement[$i]['dateAchat'];
+            $vetement[$i]['dateAchat'] = $vdate->convertUsToFr($temp); //from yyyy/mm/dd to dd/mm/yyyy
+        }
+
         return $app["twig"]->render('show.html.twig', ['data' => $vetement]);
     }
 
     public function edit(Application $app, $id) {
+
         $this->typeModel = new TypeModel($app);
-        $types = $this->typeModel->getAllTypes();
+        $types = $this->typeModel->getAllType();
 
         $this->vetementModel = new VetementModel($app);
         $donnees = $this->vetementModel->getVetementByID($id);
@@ -54,12 +66,12 @@ class VetementController implements ControllerProviderInterface
     public function add(Application $app) {
         $this->typeModel = new TypeModel($app);
         $types = $this->typeModel->getAllType();
-        return $app["twig"]->render('backOffice/vetement/add.html.twig',['types'=>$types]);
+        return $app["twig"]->render('backOffice/vetement/1add.html.twig',['types'=>$types]);
     }
 
     public function delete(Application $app, $id) {
         $this->typeModel = new TypeModel($app);
-        $types = $this->typeProduitModel->getAllTypes();
+        $types = $this->typeModel->getAllType();
         $this->vetementModel = new VetementModel($app);
         $donnees = $this->vetementModel->getVetementByID($id);
         return $app["twig"]->render('backOffice/Vetement/delete.html.twig',['types'=>$types,'donnees'=>$donnees]);
@@ -77,26 +89,39 @@ class VetementController implements ControllerProviderInterface
     }
 
     public function validFormAdd(Application $app, Request $req) {
-        // var_dump($app['request']->attributes);
+
+        //Calling helper for validate date and convert from dd/mm/yyyy to yyyy/mm/dd
+        $date = new Helper_Date();
+
         if (isset($_POST['descriptif']) && isset($_POST['type_id']) and isset($_POST['descriptif']) and isset($_POST['photo'])) {
             $donnees = [
                 'descriptif' => htmlspecialchars($_POST['descriptif']),                    // echapper les entrées
                 'type_id' => htmlspecialchars($req->get('type_id')),  //$app['request']-> ne focntionne plus
                 'prixDeBase' => htmlspecialchars($req->get('prixDeBase')),
                 'taille' => htmlspecialchars($req->get('taille')),
-                'photo' => $app->escape($req->get('photo'))  //$req->query->get('photo')-> ne focntionne plus
+                'photo' => $app->escape($req->get('photo')),  //$req->query->get('photo')-> ne focntionne plus
+                'dateAchat'=> htmlspecialchars($req->get('dateAchat'))
             ];
             if ((! preg_match("/^[A-Za-z ]{2,}/",$donnees['descriptif']))) $erreurs['descriptif']='nom composé de 2 lettres minimum';
             if(! is_numeric($donnees['type_id']))$erreurs['type_id']='veuillez saisir une valeur';
             if(! is_numeric($donnees['prixDeBase']))$erreurs['prixDeBase']='saisir une valeur numérique';
             if(! is_numeric($donnees['taille']))$erreurs['taille']='saisir une valeur numérique';
-            if (! preg_match("/[A-Za-z0-9]{2,}.(jpeg|jpg|png)/",$donnees['photo'])) $erreurs['photo']='nom de fichier incorrect (extension jpeg , jpg ou png)';
+            if(! preg_match("/[A-Za-z0-9]{2,}.(jpeg|jpg|png)/",$donnees['photo'])) $erreurs['photo']='nom de fichier incorrect (extension jpeg , jpg ou png)';
+
+            if(! $date->isValidDate($donnees['dateAchat'])) {
+
+                $erreurs['dateAchat']='Date Invalide';
+            }
+            else
+            {
+                $donnees['dateAchat'] = $date->convertFRtoUS($donnees['dateAchat']);
+            }
 
             if(! empty($erreurs))
             {
                 $this->typeModel = new TypeModel($app);
                 $types = $this->typeModel->getAllType();
-                return $app["twig"]->render('backOffice/Vetement/add.html.twig',['donnees'=>$donnees,'erreurs'=>$erreurs,'types'=>$types]);
+                return $app["twig"]->render('backOffice/Vetement/1add.html.twig',['donnees'=>$donnees,'erreurs'=>$erreurs,'types'=>$types]);
             }
             else
             {
@@ -110,23 +135,46 @@ class VetementController implements ControllerProviderInterface
             return $app->abort(404, 'error Pb data form Add');
     }
 
+    /**
+     * @param Application $app
+     * @param Request $req
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
+     */
     public function validFormEdit(Application $app, Request $req) {
         // var_dump($app['request']->attributes);
-        if (isset($_POST['descriptif']) && isset($_POST['typeProduit_id']) and isset($_POST['descriptif']) and isset($_POST['photo']) and isset($_POST['id_vetement'])) {
+        $date = new Helper_Date();
+        if (isset($_POST['descriptif']) && isset($_POST['type_id']) and isset($_POST['descriptif']) and isset($_POST['photo']) and isset($_POST['id_vetement'])) {
             $donnees = [
-                'descriptif' => htmlspecialchars($_POST['nom']),                    // echapper les entrées
+                'descriptif' => htmlspecialchars($_POST['descriptif']),                    // echapper les entrées
                 'type_id' => htmlspecialchars($req->get('type_id')),  //$app['request']-> ne focntionne plus
                 'prixDeBase' => htmlspecialchars($req->get('prixDeBase')),
                 'taille' => htmlspecialchars($req->get('taille')),
                 'photo' => $app->escape($req->get('photo')),  //$req->query->get('photo')-> ne focntionne plus
+//                'dateAchat' => htmlspecialchars($_POST['dateAchat']),
+                'dateAchat'=> htmlspecialchars($req->get('dateAchat')),
                 'id_vetement' => $app->escape($req->get('id_vetement'))//$req->query->get('photo')
             ];
+
+
+
             if ((! preg_match("/^[A-Za-z ]{2,}/",$donnees['descriptif']))) $erreurs['descriptif']='nom composé de 2 lettres minimum';
             if(! is_numeric($donnees['type_id']))$erreurs['type_id']='veuillez saisir une valeur';
             if(! is_numeric($donnees['prixDeBase']))$erreurs['prixDeBase']='saisir une valeur numérique';
             if(! is_numeric($donnees['taille']))$erreurs['taille']='saisir une valeur numérique';
-            if (! preg_match("/[A-Za-z0-9]{2,}.(jpeg|jpg|png)/",$donnees['photo'])) $erreurs['photo']='nom de fichier incorrect (extension jpeg , jpg ou png)';
+            if(! preg_match("/[A-Za-z0-9]{2,}.(jpeg|jpg|png)/",$donnees['photo'])) $erreurs['photo']='nom de fichier incorrect (extension jpeg , jpg ou png)';
+
             if(! is_numeric($donnees['id_vetement']))$erreurs['id_vetement']='saisir une valeur numérique';
+
+            if(! $date->isValidDate($donnees['dateAchat'])) {
+
+                $erreurs['dateAchat']='Date Invalide';
+            }
+            else
+            {
+                $donnees['dateAchat'] = $date->convertFRtoUS($donnees['dateAchat']);
+            }
+
+//                var_dump($donnees['dateAchat']);die();
             $contraintes = new Assert\Collection(
                 [
                     'id_vetement' => [new Assert\NotBlank(),new Assert\Type('digit')],
@@ -150,13 +198,16 @@ class VetementController implements ControllerProviderInterface
                     'taille' => new Assert\Type(array(
                         'type'    => 'numeric',
                         'message' => 'La valeur {{ value }} n\'est pas valide, le type est {{ type }}.',
-                    ))
-
+                    )),
+                        'dateAchat' => new Assert\Type('string')
+//                        'dateAchat' =>[ new Assert\Date(['message'=>'saisir une date'])]
                 ]);
+
             $errors = $app['validator']->validate($donnees,$contraintes);  // ce n'est pas validateValue
 
 
-            if (count($errors) > 0) {
+            if ((count($errors) > 0)||(! empty($erreurs))) {
+//            if (count($errors) > 0) {
 
                 $this->typeModel = new TypeModel($app);
                 $types = $this->typeModel->getAllType();
@@ -182,11 +233,19 @@ class VetementController implements ControllerProviderInterface
     }
 
     public function showbyCategories(Application $app,Request $req) {
-
+        $vdate = new Helper_Date();
         $type_id = htmlspecialchars($req->get('id_Type'));
-//        var_dump($type_id);end;
         $this->vetementModel = new VetementModel($app);
+        $total = $this->vetementModel->getTotalByTypes($type_id);
         $vetements = $this->vetementModel->getVetementsByCategories($type_id);
+
+        $max = (int)$total['total'];
+//        var_dump($max);die();
+        for ($i = 0;$i < $max; $i++){
+            $temp = $vetements[$i]['dateAchat'];
+            $vetements[$i]['dateAchat'] = $vdate->convertUsToFr($temp);
+        }
+
         return $app["twig"]->render('show.html.twig',['data'=>$vetements]);
     }
 

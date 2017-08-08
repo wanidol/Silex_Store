@@ -1,6 +1,6 @@
 {% extends "layout.html.twig" %}
 {% block contenu %}
-    <form method="post" action="{{ path('produit.validFormEdit') }}">
+    <form method="post" action="{{ path('vetement.validFormEdit') }}">
         <div class="row">
 
             {% if errors is defined %}
@@ -15,7 +15,7 @@
             {% endif %}
 
             <fieldset>
-                <legend>Modifier un produit  (avec twig)</legend>
+                <legend>Modifier un Vetement  (avec twig)</legend>
                 <input name="id_vetement"  type="hidden" value="{{donnees.id_vetement}}" />
                 <label>Nom :
                     <input name="descriptif"  type="text"  size="18" value="{{donnees.descriptif}}" />
@@ -26,25 +26,52 @@
                 <label>Type :
                     <select name="type_id">
                         {% for type in types %}
-                            <option value="{{ type.id }}"
+                            <option value="{{ type.id_Type }}"
                                     {% if donnees.type_id is defined and type.id_Type == donnees.type_id %} selected {% endif %}>
                                 {{ type.libelle }}
                             </option>
                         {% endfor %}
                     </select>
                     {% if erreurs.typeProduit_id is defined %}
-                        <small class="error">{{erreurs.typeProduit_id}}</small>
+                        <small class="error">{{erreurs.type_id}}</small>
                     {% endif %}
                 </label>
-                <label>Prix
-                    <input name="prix"  type="text"  size="18" 	value="{{donnees.prix}}"/>
-                    {% if erreurs.prix is defined %}
-                        <small class="error">{{erreurs.prix}}</small>
+                <label>Prix De Base
+                    <input name="prixDeBase"  type="text"  size="18" 	value="{{donnees.prixDeBase}}"/>
+                    {% if erreurs.prixDeBase is defined %}
+                        <small class="error">{{erreurs.prixDeBase}}</small>
                     {% endif %}
-                    {% if errors.prix is defined %}
-                        <small class="error">message 2{{errors.prix.message}}</small>
+                    {% if errors.prixDeBase is defined %}
+                        <small class="error">message 2{{errors.prixDeBase.message}}</small>
                     {% endif %}
                 </label>
+                <label>Taille
+                    <input name="taille"  type="text"  size="18" 	value="{{donnees.taille}}"/>
+                    {% if erreurs.taille is defined %}
+                        <small class="error">{{erreurs.taille}}</small>
+                    {% endif %}
+                    {% if errors.taille is defined %}
+                        <small class="error">message 2{{errors.taille.message}}</small>
+                    {% endif %}
+                </label>
+                <label>dateAchat
+                    <input name="dateAchat"  type="date"  size="18" value="{{donnees.dateAchat}}"/>
+                    {% if erreurs.dateAchat is defined %}
+                        <small class="error">{{erreurs.dateAchat}}</small>
+                    {% endif %}
+                    {% if errors.dateAchat is defined %}
+                        <small class="error">message 2{{errors.dateAchat.message}}</small>
+                    {% endif %}
+                {#</label>#}
+                {#<label>Date Achat#}
+                   {#<input name="dateAchat" class="datepicker" type="text"  size="18" maxlength="10"	value="{{donnees.dateAchat}}"/>#}
+                    {#{% if erreurs.dateAchat is defined %}#}
+                        {#<small class="error">{{erreurs.dateAchat}}</small>#}
+                    {#{% endif %}#}
+                    {#{% if errors.dateAchat is defined %}#}
+                        {#<small class="error">message 2{{errors.dateAchat.message}}</small>#}
+                    {#{% endif %}#}
+                {#</label>#}
                 <label>Photo
                     <input name="photo"  type="text"  size="18" value="{{donnees.photo}}"/>
                     {% if erreurs.photo is defined %}
@@ -54,7 +81,8 @@
 
                 <input type="hidden" id="_method" name="_method" value="put" />
 
-                <input type="submit" name="modifierProduit" value="Modifier" />
+                <input type="submit" name="modifierVetement" value="Modifier" />
+                <input type="button" value="Annuler" onclick="history.back();"/>
             </fieldset>
         </div>
     </form>

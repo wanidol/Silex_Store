@@ -38,7 +38,7 @@ class UserController implements ControllerProviderInterface {
     {
         $this->usermodel = new UserModel($app);
         $users = $this->usermodel->show();
-        return $app["twig"]->render('backOff\showuser.html.twig',['data'=>$users]);
+        return $app["twig"]->render('backOffice\showUser.html.twig',['data'=>$users]);
     }
 
     public function registerUser(Application $app)
@@ -133,10 +133,11 @@ class UserController implements ControllerProviderInterface {
         $user_id =$app['session']->get('user_id');
 //        var_dump($user_id);die();
         $users = $this->usermodel->coord($user_id);
-        return $app["twig"]->render('backOff\showcoord.html.twig',['data'=>$users]);
+        return $app["twig"]->render('backOffice\showCoord.html.twig',['data'=>$users]);
     }
 
     public function connect(Application $app) {
+
         $controllers = $app['controllers_factory'];
         $controllers->match('/', 'App\Controller\UserController::index')->bind('user.index');
         $controllers->get('/login', 'App\Controller\UserController::connexionUser')->bind('user.login');

@@ -1,0 +1,40 @@
+
+{% extends "layout.html.twig" %}
+{% block contenu %}
+	<div class="row">
+
+		<table>
+			<caption>Recapitulatifs Du Votre Clients (avec twig)</caption>
+			<thead>
+
+			<tr>
+				<th>User Id</th>
+				<th>Username</th>
+				<th>Password</th>
+				<th>Role</th>
+				<th>Email</th>
+				<th>Enabled</th>
+			</tr>
+			</thead>
+			<tbody>
+
+            {% for user in data if data is not empty %}
+				<tr>
+					<td>{{user.id}}</td>
+					<td>{{user.username}}</td>
+					<td>{{user.password}}</td>
+					<td>{{user.roles}}</td>
+					<td>{{user.email}}</td>
+
+					<td>{{ user.isEnabled }}</td>
+
+
+
+				</tr>
+            {% endfor %}
+			<tbody>
+		</table>
+	</div>
+{% endblock %}
+
+

@@ -26,7 +26,7 @@
                         <small class="error">{{erreurs.type_id}}</small>
                     {% endif %}
                 </label>
-                <label>Prix
+                <label>Prix De Base
                     <input name="prixDeBase"  type="text"  size="18" 	value="{{donnees.prixDeBase|default('')}}"/>
                     {% if erreurs.prixDeBase is defined %}
                         <small class="error">{{erreurs.prixDeBase}}</small>
@@ -38,6 +38,12 @@
                         <small class="error">{{erreurs.taille}}</small>
                     {% endif %}
                 </label>
+                <label>dateAchat
+                    <input name="dateAchat"  type="date"  size="18" 	value="{{donnees.dateAchat|default('')}}"/>
+                    {% if erreurs.dateAchat is defined %}
+                        <small class="error">{{erreurs.dateAchat}}</small>
+                    {% endif %}
+                </label>
                 <label>Photo
                     <input name="photo"  type="text"  size="18" value="{{donnees.photo|default('')}}"/>
                     {% if erreurs.photo is defined %}
@@ -45,6 +51,7 @@
                     {% endif %}
                 </label>
                 <input type="submit" name="creerVetement" value="créer" />
+                <input type="button" value="Annuler" onclick="history.back();"/>
             </fieldset>
         </div>
     </form>
